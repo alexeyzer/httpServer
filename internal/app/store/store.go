@@ -9,6 +9,7 @@ type Store struct {
 	config *Config
 	db *sql.DB
 	advRepository *AdvRepository
+	refrepository *refrepository
 }
 
 func NewStore(config *Config) *Store{
@@ -44,4 +45,15 @@ func (s *Store) Adv() *AdvRepository{
 		store:s,
 	}
 	return s.advRepository
+}
+
+func (s *Store) Ref() *refrepository{
+	if s.refrepository != nil {
+		return s.refrepository
+	}
+
+	s.refrepository = &refrepository{
+		store:s,
+	}
+	return s.refrepository
 }

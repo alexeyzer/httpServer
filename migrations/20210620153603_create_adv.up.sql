@@ -1,5 +1,5 @@
 CREATE TABLE adv(
-    ID bigserial not null primary key,
+    id bigserial not null primary key,
     name varchar(200) not null,
     description varchar(1000),
     price int,

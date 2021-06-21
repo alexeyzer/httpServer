@@ -6,4 +6,6 @@ type Adv struct{
 	Description string
 	Price int
 	Date string
+	Ref []Ref
+	NextPage bool
 }

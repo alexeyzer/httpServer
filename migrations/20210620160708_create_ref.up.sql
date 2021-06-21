@@ -1,8 +1,8 @@
 CREATE TABLE ref(
-    ID bigserial not null primary key,
-    advId int not null,
+    id bigserial not null primary key,
+    adv_id int not null,
     ref varchar(200) not null,
     constraint fk_adv
-                foreign key(advId)
+                foreign key(adv_id)
                     references adv(ID)
 );
