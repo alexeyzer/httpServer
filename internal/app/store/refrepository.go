@@ -2,7 +2,6 @@ package store
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/alexeyzer/httpServer/internal/app/model"
 )
 
@@ -11,7 +10,7 @@ type refrepository struct{
 }
 
 func (r * refrepository) Create(ref *model.Ref) (*model.Ref, error){
-	if err := r.store.db.QueryRow("INSERT INTO ref(adv_id, ref) VALUES ($1,$2, $3) RETURNING ID",
+	if err := r.store.db.QueryRow("INSERT INTO ref(adv_id, ref) VALUES ($1,$2) RETURNING ID",
 		ref.AdvId,
 		ref.Ref).Scan(&ref.ID); err != nil{
 		return nil, err
@@ -37,7 +36,6 @@ func (r * refrepository) GetList(AdvId int) ([]model.Ref, error){
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(newref)
 		list = append(list, newref)
 	}
 	return list, nil

@@ -1,0 +1,26 @@
+version: "3.1"
+
+services:
+  database:
+    image: postgres
+    restart: always
+    environment:
+      - DB_USER=alexzudin
+      - DB_PASSWORD=password
+      - DB_NAME=avito_db
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=avito_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - avito_db
+      - ./migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+  server:
+    depends_on:
+      - database
+    build: .
+    env_file: .env
+    networks:
+      - default
+    ports:
+      - "8080:8080"

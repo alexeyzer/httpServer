@@ -2,7 +2,6 @@ package store
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/alexeyzer/httpServer/internal/app/model"
 )
 
@@ -88,7 +87,6 @@ func (a *AdvRepository) List(sort string) ([]model.Adv, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println(newadv)
 		list = append(list, newadv)
 	}
 	return list, nil
