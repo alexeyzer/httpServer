@@ -90,7 +90,7 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(list) > 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Writ([]byte("Maximum count of references is 3"))
+		w.Write([]byte("Maximum count of references is 3"))
 		return
 	}
 	for _,a := range list {
