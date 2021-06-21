@@ -90,7 +90,7 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(list) > 3 {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Maximum count of references is 3"))
+		w.Writ([]byte("Maximum count of references is 3"))
 		return
 	}
 	for _,a := range list {
@@ -193,13 +193,10 @@ func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		if count < n*10 {
-			if n == 1{
-				n = 0
-			}
-			page.ListAdv = list[n*10 : count]
+			page.ListAdv = list[(n - 1)*10 : count]
 			page.NextPage = false
 		} else {
-			page.ListAdv = list[n*10 : n*10+10]
+			page.ListAdv = list[(n - 1)*10 : n*10+10]
 			page.NextPage = true
 		}
 	}

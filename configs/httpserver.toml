@@ -2,5 +2,5 @@ bind_addr = ":8080"
 log_level = "debug"
 
 [store]
-#database_url = "host=localhost dbname=avito_db sslmode=disable"
-database_url = "host=database port=5432 user=postgres dbname=avito_db password=password sslmode=disable"
+database_url = "host=localhost dbname=avito_db sslmode=disable"
+#atabase_url = "host=database port=5432 user=postgres dbname=avito_db password=password sslmode=disable"
