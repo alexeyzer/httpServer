@@ -80,32 +80,35 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	str := r.FormValue("reference")
-	list := strings.Split(str, ",")
-
 	newAdv, err := s.store.Adv().Create(adv)
-	if err != nil {
-		s.logger.Errorf("error adding new adverb: %v", err)
-		return
-	}
-	if len(list) > 3 {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Maximum count of references is 3"))
-		return
-	}
-	for _,a := range list {
-		newReference := model.Ref{}
-		newReference.Ref = a
-		newReference.AdvId = newAdv.ID
-		listRef = append(listRef, newReference)
-	}
-	for _, elem := range listRef {
-		_, err := s.store.Ref().Create(&elem)
+
+	str := r.FormValue("reference")
+	if str != ""{
+		list := strings.Split(str, ",")
 		if err != nil {
-			s.logger.Errorf("error adding new reference: %v", err)
+			s.logger.Errorf("error adding new adverb: %v", err)
 			return
 		}
+		if len(list) > 3 {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("Maximum count of references is 3"))
+			return
+		}
+		for _,a := range list {
+			newReference := model.Ref{}
+			newReference.Ref = a
+			newReference.AdvId = newAdv.ID
+			listRef = append(listRef, newReference)
+		}
+		for _, elem := range listRef {
+			_, err := s.store.Ref().Create(&elem)
+			if err != nil {
+				s.logger.Errorf("error adding new reference: %v", err)
+				return
+			}
+		}
 	}
+
 	response := fmt.Sprintf("{\"id\": %v, result: %v}", adv.ID, "success")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(response))
@@ -145,14 +148,18 @@ func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request){
 				model.Ref = listRef[:1]
 			}
 		}
+		response, err := json.Marshal(model)
+		if err != nil {
+			s.logger.Errorf("error in marshaling json: %v", err)
+			return
+		}
+		s.logger.Info(string(response))
+		w.Write(response)
+
+	} else {
+		s.logger.Info("no adv with id:", id)
+		w.Write([]byte("{result:fail}"))
 	}
-	response, err := json.Marshal(model)
-	if err != nil {
-		s.logger.Errorf("error in marshaling json: %v", err)
-		return
-	}
-	s.logger.Info(string(response))
-	w.Write(response)
 }
 
 func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request){
@@ -196,7 +203,7 @@ func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request){
 			page.ListAdv = list[(n - 1)*10 : count]
 			page.NextPage = false
 		} else {
-			page.ListAdv = list[(n - 1)*10 : n*10+10]
+			page.ListAdv = list[(n - 1)*10 : n*10]
 			page.NextPage = true
 		}
 	}

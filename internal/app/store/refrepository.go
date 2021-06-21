@@ -21,7 +21,7 @@ func (r * refrepository) Create(ref *model.Ref) (*model.Ref, error){
 func (r * refrepository) GetList(AdvId int) ([]model.Ref, error){
 	var res *sql.Rows = nil
 	var err error = nil
-	res, err = r.store.db.Query("SELECT id, adv_id, ref from ref where adv_id = $1", AdvId)
+	res, err = r.store.db.Query("SELECT id, adv_id, ref from ref where adv_id = $1 order by id", AdvId)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
