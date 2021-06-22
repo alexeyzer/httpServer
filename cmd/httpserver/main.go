@@ -7,11 +7,11 @@ import (
 	"log"
 )
 
-var(
+var (
 	configPath string
 )
 
-func init(){
+func init() {
 	flag.StringVar(&configPath, "config-path", "./configs/httpserver.toml", "path to config file")
 }
 

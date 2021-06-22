@@ -4,7 +4,7 @@ type Config struct {
 	DataBaseUrl string `toml:"database_url"`
 }
 
-func NewConfig() *Config{
+func NewConfig() *Config {
 	return &Config{
 		DataBaseUrl: "",
 	}

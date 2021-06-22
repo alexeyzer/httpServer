@@ -24,3 +24,5 @@ services:
       - default
     ports:
       - "8080:8080"
+volumes:
+  avito_db: {}

@@ -5,22 +5,22 @@ import (
 	"unicode/utf8"
 )
 
-type Adv struct{
-	ID int
-	Name string
+type Adv struct {
+	ID          int
+	Name        string
 	Description string
-	Price int
-	Date string
-	Ref []Ref
+	Price       int
+	Date        string
+	Ref         []Ref
 }
 
 type PageAdv struct {
-	ListAdv []Adv
+	ListAdv  []Adv
 	NextPage bool
 }
 
-func (a *Adv) Check() error{
-	if utf8.RuneCountInString(a.Name) > 200{
+func (a *Adv) Check() error {
+	if utf8.RuneCountInString(a.Name) > 200 {
 		return fmt.Errorf("maximum name length 200 characters")
 	}
 	if utf8.RuneCountInString(a.Description) > 1000 {

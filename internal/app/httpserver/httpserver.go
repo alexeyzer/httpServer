@@ -17,7 +17,7 @@ type httpserver struct {
 	config *config
 	logger *logrus.Logger
 	router *mux.Router
-	store *store.Store
+	store  *store.Store
 }
 
 func NewHttpServer(config *config) *httpserver {
@@ -29,20 +29,20 @@ func NewHttpServer(config *config) *httpserver {
 	return &server
 }
 
-func (s *httpserver) Start() error{
+func (s *httpserver) Start() error {
 	err := s.ConfigLogger()
 	if err != nil {
 		return err
 	}
 	s.ConfigureRouter()
-	if err := s.ConfigStore(); err != nil{
+	if err := s.ConfigStore(); err != nil {
 		return err
 	}
 	s.logger.Info("Staring httpserver")
 	return http.ListenAndServe(s.config.BindAddr, s.router)
 }
 
-func (s *httpserver) ConfigLogger() error{
+func (s *httpserver) ConfigLogger() error {
 	level, err := logrus.ParseLevel(s.config.LogLevel)
 	if err != nil {
 		return err
@@ -51,7 +51,7 @@ func (s *httpserver) ConfigLogger() error{
 	return nil
 }
 
-func (s *httpserver) ConfigStore() error{
+func (s *httpserver) ConfigStore() error {
 	store := store.NewStore(s.config.Store)
 	if err := store.Open(); err != nil {
 		return err
@@ -70,7 +70,7 @@ func (s *httpserver) ConfigureRouter() {
 func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 	s.logger.Info("HandlerAdvCreate")
 	adv := &model.Adv{}
-	listRef :=  []model.Ref{}
+	listRef := []model.Ref{}
 
 	adv.Name = r.FormValue("name")
 	adv.Description = r.FormValue("description")
@@ -83,7 +83,7 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 	newAdv, err := s.store.Adv().Create(adv)
 
 	str := r.FormValue("reference")
-	if str != ""{
+	if str != "" {
 		list := strings.Split(str, ",")
 		if err != nil {
 			s.logger.Errorf("error adding new adverb: %v", err)
@@ -94,7 +94,7 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Maximum count of references is 3"))
 			return
 		}
-		for _,a := range list {
+		for _, a := range list {
 			newReference := model.Ref{}
 			newReference.Ref = a
 			newReference.AdvId = newAdv.ID
@@ -114,7 +114,7 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(response))
 }
 
-func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request){
+func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request) {
 	s.logger.Info("HandlerCurrentAdv")
 
 	fields := r.FormValue("fields")
@@ -141,8 +141,8 @@ func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request){
 			s.logger.Errorf("error in pq: %v", err)
 			return
 		}
-		if len(listRef) > 0{
-			if optional == true  {
+		if len(listRef) > 0 {
+			if optional == true {
 				model.Ref = listRef
 			} else {
 				model.Ref = listRef[:1]
@@ -162,13 +162,13 @@ func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request){
+func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request) {
 	s.logger.Info("HandlerListAdv")
 
 	sort := r.FormValue("sort")
 	p := r.FormValue("page")
 	var n int = 1
-	if p != ""{
+	if p != "" {
 		var err error
 		n, err = strconv.Atoi(p)
 		if err != nil {
@@ -186,13 +186,13 @@ func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request){
 			s.logger.Errorf("error in pq: %v", err)
 			return
 		}
-		if len(listRef) > 0{
+		if len(listRef) > 0 {
 			list[c].Ref = listRef[:1]
 		}
 	}
 	page := model.PageAdv{}
 	count := len(list)
-	countPages := count / 10 + count % 10
+	countPages := count/10 + count%10
 	if count > 0 {
 		if countPages < n {
 			w.WriteHeader(http.StatusBadRequest)
@@ -200,10 +200,10 @@ func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		if count < n*10 {
-			page.ListAdv = list[(n - 1)*10 : count]
+			page.ListAdv = list[(n-1)*10 : count]
 			page.NextPage = false
 		} else {
-			page.ListAdv = list[(n - 1)*10 : n*10]
+			page.ListAdv = list[(n-1)*10 : n*10]
 			page.NextPage = true
 		}
 	}

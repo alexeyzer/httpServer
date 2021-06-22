@@ -1,12 +1,12 @@
 package store
 
 import (
-"os"
-"testing"
+	"os"
+	"testing"
 )
 
 var (
-databaseURL string
+	databaseURL string
 )
 
 func TestMain(m *testing.M) {

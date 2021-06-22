@@ -6,26 +6,26 @@ import (
 )
 
 type Store struct {
-	config *Config
-	db *sql.DB
+	config        *Config
+	db            *sql.DB
 	advRepository *AdvRepository
 	refrepository *refrepository
 }
 
-func NewStore(config *Config) *Store{
+func NewStore(config *Config) *Store {
 	s := Store{
 		config: config,
 	}
 	return &s
 }
 
-func (s *Store) Open() error{
+func (s *Store) Open() error {
 	db, err := sql.Open("postgres", s.config.DataBaseUrl)
-	if (err != nil) {
+	if err != nil {
 		return err
 	}
 
-	if err := db.Ping(); err != nil{
+	if err := db.Ping(); err != nil {
 		return err
 	}
 	s.db = db
@@ -36,24 +36,24 @@ func (s *Store) Close() {
 	s.db.Close()
 }
 
-func (s *Store) Adv() *AdvRepository{
+func (s *Store) Adv() *AdvRepository {
 	if s.advRepository != nil {
 		return s.advRepository
 	}
 
 	s.advRepository = &AdvRepository{
-		store:s,
+		store: s,
 	}
 	return s.advRepository
 }
 
-func (s *Store) Ref() *refrepository{
+func (s *Store) Ref() *refrepository {
 	if s.refrepository != nil {
 		return s.refrepository
 	}
 
 	s.refrepository = &refrepository{
-		store:s,
+		store: s,
 	}
 	return s.refrepository
 }

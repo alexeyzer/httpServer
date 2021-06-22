@@ -5,27 +5,27 @@ import (
 	"github.com/alexeyzer/httpServer/internal/app/model"
 )
 
-type AdvRepository struct{
+type AdvRepository struct {
 	store *Store
 }
 
-func (a * AdvRepository) Create(adv *model.Adv) (*model.Adv, error){
+func (a *AdvRepository) Create(adv *model.Adv) (*model.Adv, error) {
 	if err := a.store.db.QueryRow("INSERT INTO adv(name, description, price) VALUES ($1,$2, $3) RETURNING ID",
 		adv.Name,
 		adv.Description,
-		adv.Price).Scan(&adv.ID); err != nil{
-		return nil,err
+		adv.Price).Scan(&adv.ID); err != nil {
+		return nil, err
 	}
-	return adv,nil
+	return adv, nil
 }
 
-func (a *AdvRepository) FindById(ID int, optional bool) (*model.Adv, error){
+func (a *AdvRepository) FindById(ID int, optional bool) (*model.Adv, error) {
 
 	adv := &model.Adv{}
-	if optional == false{
+	if optional == false {
 		if err := a.store.db.QueryRow("SELECT id, name, price, date_create from adv where ID = $1", ID).Scan(
 			&adv.ID, &adv.Name, &adv.Price, &adv.Date); err != nil {
-			if err == sql.ErrNoRows{
+			if err == sql.ErrNoRows {
 				return nil, nil
 			} else {
 				return nil, err
@@ -34,7 +34,7 @@ func (a *AdvRepository) FindById(ID int, optional bool) (*model.Adv, error){
 	} else {
 		if err := a.store.db.QueryRow("SELECT id, name, description, price, date_create from adv where id = $1", ID).Scan(
 			&adv.ID, &adv.Name, &adv.Description, &adv.Price, &adv.Date); err != nil {
-			if err == sql.ErrNoRows{
+			if err == sql.ErrNoRows {
 				return nil, nil
 			} else {
 				return nil, err
@@ -42,14 +42,14 @@ func (a *AdvRepository) FindById(ID int, optional bool) (*model.Adv, error){
 		}
 	}
 
-	return adv,nil
+	return adv, nil
 }
 
 func (a *AdvRepository) List(sort string) ([]model.Adv, error) {
 
 	var res *sql.Rows = nil
 	var err error = nil
-	switch sort{
+	switch sort {
 	case "-price":
 		res, err = a.store.db.Query("SELECT id, name, description, price, date_create from adv order by price desc")
 		if err != nil {
@@ -81,9 +81,9 @@ func (a *AdvRepository) List(sort string) ([]model.Adv, error) {
 	}
 	defer res.Close()
 	list := []model.Adv{}
-	for res.Next(){
+	for res.Next() {
 		newadv := model.Adv{}
-		err = res.Scan(&newadv.ID,&newadv.Name ,&newadv.Description, &newadv.Price, &newadv.Date)
+		err = res.Scan(&newadv.ID, &newadv.Name, &newadv.Description, &newadv.Price, &newadv.Date)
 		if err != nil {
 			return nil, err
 		}

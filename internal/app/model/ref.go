@@ -1,7 +1,7 @@
 package model
 
 type Ref struct {
-	ID int
+	ID    int
 	AdvId int
-	Ref string
+	Ref   string
 }
