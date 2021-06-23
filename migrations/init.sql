@@ -3,7 +3,7 @@ CREATE TABLE adv(
                     name varchar(200) not null,
                     description varchar(1000),
                     price int,
-                    date_create date default now()
+                    date_create timestamp default now()
 );
 
 CREATE TABLE ref(

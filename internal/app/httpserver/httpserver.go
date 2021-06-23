@@ -77,21 +77,22 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 	adv.Price, _ = strconv.Atoi(r.FormValue("price"))
 	if err := adv.Check(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(err.Error()))
+		response := fmt.Sprintf("{\"id\": %v, \"result\": %v}", -1, "failure")
+		w.Write([]byte(response))
 		return
 	}
-	newAdv, err := s.store.Adv().Create(adv)
-
 	str := r.FormValue("reference")
 	if str != "" {
 		list := strings.Split(str, ",")
-		if err != nil {
-			s.logger.Errorf("error adding new adverb: %v", err)
-			return
-		}
 		if len(list) > 3 {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Maximum count of references is 3"))
+			response := fmt.Sprintf("{\"id\": %v, result: %v}", -1, "failure")
+			w.Write([]byte(response))
+			return
+		}
+		newAdv, err := s.store.Adv().Create(adv)
+		if err != nil {
+			s.logger.Errorf("error adding new adverb: %v", err)
 			return
 		}
 		for _, a := range list {
@@ -108,7 +109,6 @@ func (s *httpserver) advCreate(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
 	response := fmt.Sprintf("{\"id\": %v, result: %v}", adv.ID, "success")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(response))
@@ -123,7 +123,8 @@ func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request) {
 
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 Bad Request"))
+		response := fmt.Sprintf("{\"id\": %v, \"result\": %v}", -1, "failure")
+		w.Write([]byte(response))
 		return
 	}
 	advId, _ := strconv.Atoi(id)
@@ -158,7 +159,7 @@ func (s *httpserver) currentAdv(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		s.logger.Info("no adv with id:", id)
-		w.Write([]byte("{result:fail}"))
+		w.Write([]byte("{\"result\":failure}"))
 	}
 }
 
@@ -192,11 +193,18 @@ func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request) {
 	}
 	page := model.PageAdv{}
 	count := len(list)
-	countPages := count/10 + count%10
+	countPages := count / 10
+	if count%10 > 0 {
+		countPages++
+	}
+	if n <= 0 {
+		n = 1
+	}
 	if count > 0 {
 		if countPages < n {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("Invalid Page"))
+			s.logger.Info("Invalid page:", n)
+			w.Write([]byte("{\"result\":failure}"))
 			return
 		}
 		if count < n*10 {
@@ -213,5 +221,6 @@ func (s *httpserver) listAdv(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.logger.Info(string(response))
+	w.WriteHeader(http.StatusOK)
 	w.Write(response)
 }
